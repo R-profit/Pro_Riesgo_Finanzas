@@ -1,0 +1,17 @@
+# entornos
+.venv/
+.venv311/
+venv/
+# caché/IDE
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+# secretos
+.env
+# artefactos
+outputs/
+exports/
+logs/
+reports/
+*.log

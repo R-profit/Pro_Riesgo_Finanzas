@@ -1,0 +1,70 @@
+2025-11-05 00:26:38 | ERROR | [ERROR CRÍTICO] KeyError: 'Close'
+Traceback (most recent call last):
+  File "C:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\Lib\site-packages\pandas\core\indexes\base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'Close'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 252, in <module>
+    ultimos_datos = df['Close'].tail(window)
+                    ~~^^^^^^^^^
+  File "C:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\Lib\site-packages\pandas\core\frame.py", line 4102, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\Lib\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'Close'
+[2025-11-05 00:26:38] Traceback (most recent call last):
+  File "C:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\Lib\site-packages\pandas\core\indexes\base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'Close'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 252, in <module>
+    ultimos_datos = df['Close'].tail(window)
+                    ~~^^^^^^^^^
+  File "C:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\Lib\site-packages\pandas\core\frame.py", line 4102, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\Lib\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'Close'
+
+2025-11-05 00:32:11 | ERROR | [ERROR CRÍTICO] NameError: name 'col' is not defined
+Traceback (most recent call last):
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 223, in <module>
+    arima_model = ModeloARIMA(df)
+                  ^^^^^^^^^^^^^^^
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 109, in __init__
+    datos.columns = ['_'.join([str(c) for c in col if c]) for c in datos.columns]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 109, in <listcomp>
+    datos.columns = ['_'.join([str(c) for c in col if c]) for c in datos.columns]
+                                               ^^^
+NameError: name 'col' is not defined
+[2025-11-05 00:32:11] Traceback (most recent call last):
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 223, in <module>
+    arima_model = ModeloARIMA(df)
+                  ^^^^^^^^^^^^^^^
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 109, in __init__
+    datos.columns = ['_'.join([str(c) for c in col if c]) for c in datos.columns]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\rafae\Desktop\IBM-SENA\algotirmos UniAndes\todos juntos\algoritmos\Pro_Riesgo_Finanzas\.venv311\pronosticos.py", line 109, in <listcomp>
+    datos.columns = ['_'.join([str(c) for c in col if c]) for c in datos.columns]
+                                               ^^^
+NameError: name 'col' is not defined
+
