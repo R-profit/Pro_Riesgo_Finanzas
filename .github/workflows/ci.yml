@@ -1,37 +1,138 @@
-name: CI
-on: [push, pull_request]
+# =============================================================================
+# CI: Windows + Smoke Test (matriz 3.11 y 3.13)
+# - 3.11 es obligatorio (falla rompe la build)
+# - 3.13 es opcional (puede fallar sin poner rojo el workflow)
+# - Sin red/UI: usamos MPLBACKEND=Agg y solo pruebas de humo (no descarga datos)
+# =============================================================================
+
+name: "CI: Windows Smoke Test"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
+    name: test (py${{ matrix.python-version }}, ${{ matrix.reqfile }})
+    runs-on: windows-latest
+
+    # %% MATRIZ
     strategy:
       fail-fast: false
       matrix:
+        python-version: [ '3.11', '3.13' ]
         include:
-          - py: "3.11"
-            req: "requirements_311.txt"
-          - py: "3.13"
-            req: "requirements_314.txt"
-    runs-on: windows-latest
-    continue-on-error: ${{ matrix.py == '3.13' }}  # 3.13 opcional
+          - python-version: '3.11'
+            reqfile: requirements_311.txt
+            allow_fail: false
+          - python-version: '3.13'
+            reqfile: requirements_314.txt
+            allow_fail: true      # 3.13 aún puede tener libs no listas
+
+    # %% TOLERANCIA DE FALLOS POR CELDA/MATRIZ
+    continue-on-error: ${{ matrix.allow_fail }}
+
+    # %% ENTORNO GLOBAL (SIN GUI, SIN WARN DE PIP)
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: 1
+      PIP_NO_PYTHON_VERSION_WARNING: 1
+      PYTHONUTF8: "1"
+      MPLBACKEND: "Agg"   # backend offscreen para matplotlib
 
     steps:
-      - uses: actions/checkout@v4
+      # %% A | CHECKOUT DEL REPO
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      # %% B | INSTALAR PYTHON SEGÚN MATRIZ + CACHÉ PIP
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.py }}
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: ${{ matrix.reqfile }}
 
-      - name: Upgrade pip
-        run: python -m pip install -U pip wheel setuptools
-
-      - name: Install deps (si existe el archivo)
-        if: ${{ hashFiles(matrix.req) != '' }}
+      # %% C | INSTALAR DEPENDENCIAS (ROBUSTO SI FALTA EL TXT)
+      - name: Install dependencies
+        shell: pwsh
         run: |
-          python -m pip install --only-binary=:all: -r "${{ matrix.req }}"
+          python -m pip install -U pip setuptools wheel
+          if (Test-Path "${{ matrix.reqfile }}") {
+            Write-Host "Instalando deps desde ${{ matrix.reqfile }}"
+            pip install -r "${{ matrix.reqfile }}"
+          } else {
+            Write-Warning "No se encontró ${{ matrix.reqfile }}. Instalando mínimos."
+          }
+          # Mínimos para smoke si no están en requirements
+          pip install matplotlib
 
-      - name: Smoke test
+      # %% D | LINT OPCIONAL (NO ROMPE LA BUILD)
+      - name: Lint (opcional)
+        shell: pwsh
+        continue-on-error: true
         run: |
-          python - << 'PY'
-          import pro_riesgo_finanzas as p
-          print("import OK, version:", getattr(p, "__version__", "n/a"))
-          PY
+          pip install flake8
+          # Lint solo en src/ para evitar ruido
+          if (Test-Path "src") {
+            Write-Host "✅ src/ encontrado, aplicando flake8..."
+            flake8 src || echo "Lint warnings permitidos"
+          } else {
+            Write-Warning "⚠️ No se encontró src/, omitiendo lint."
+          }
+
+      # %% E | SMOKE TEST (SIN RED, SOLO IMPORT + PLOT BÁSICO)
+      - name: Smoke test (sin red)
+        shell: pwsh
+        run: |
+          @'
+          # %% IMPORTS BÁSICOS
+          import os, sys, matplotlib
+          assert matplotlib.get_backend().lower() == "agg", f"Backend inesperado: {matplotlib.get_backend()}"
+          # Asegura que el paquete bajo src/ sea importable
+          sys.path.insert(0, os.path.abspath("src"))
+
+          # %% IMPORT PAQUETE (tolerante a distintas claves de versión)
+          import importlib
+          try:
+              pkg = importlib.import_module("pro_riesgo_finanzas")
+          except Exception as e:
+              print("ERROR: no se pudo importar pro_riesgo_finanzas:", e)
+              raise
+
+          ver = getattr(pkg, "__version__", None) \
+                or getattr(pkg, "version__", None) \
+                or "n/a"
+          print("pkg import OK | version:", ver)
+
+          # %% PLOT OFFSCREEN (VALIDA BACKEND Agg)
+          import matplotlib.pyplot as plt
+          plt.figure()
+          plt.plot([0, 1], [0, 1])
+          os.makedirs("artifacts", exist_ok=True)
+          out = os.path.join("artifacts", "smoke.png")
+          plt.savefig(out, dpi=120, bbox_inches="tight")
+          print("Smoke OK | saved:", out)
+          '@ | python -
+
+      # %% F | SUBIR ARTEFACTOS (VERIFICABLE EN ACCIONES)
+      - name: Upload artifact (smoke.png)
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-${{ matrix.python-version }}
+          path: artifacts/smoke.png
+
+      # %% G | (OPCIONAL) DESCUBRIR TESTS SI EXISTEN SIN ROMPER LA BUILD
+      # Actívalo cuando agregues pytest:
+      # - name: PyTest (opcional)
+      #   shell: pwsh
+      #   continue-on-error: true
+      #   run: |
+      #     if (Test-Path "tests") {
+      #       pip install pytest
+      #       pytest -q
+      #     } else {
+      #       Write-Host "Sin carpeta tests/ — se omite."
+      #     }
+

@@ -33,6 +33,8 @@ reportes/*.pdf
 exports/*.png
 exports/*.csv
 exports/*.html
+exports/*.pdf
+
 
 # === Mantener rastreados (NO ignorar)
 !.github/
