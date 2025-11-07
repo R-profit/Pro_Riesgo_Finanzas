@@ -1,0 +1,42 @@
+# === Entornos virtuales
+.venv*/
+venv*/
+
+# === Cachés de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# === Jupyter
+.ipynb_checkpoints/
+
+# === IDE/Editor
+.vscode/
+.idea/
+
+# === SO
+.DS_Store
+Thumbs.db
+
+# === Builds/Distribución
+build/
+dist/
+*.egg-info/
+
+# === Datos/Salidas locales
+datos/
+logs/
+logs_*.txt
+reportes/*.png
+reportes/*.pdf
+exports/*.png
+exports/*.csv
+exports/*.html
+
+# === Mantener rastreados (NO ignorar)
+!.github/
+!scripts/*.py
+!src/**
+!requirements_*.txt
+
