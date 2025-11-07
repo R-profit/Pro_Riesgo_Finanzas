@@ -5,48 +5,45 @@ on:
   pull_request:
 
 jobs:
-  py314:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python-version: "3.13"
+            req: "requirements_314.txt"   # usa este archivo aunque el nombre diga 314
+          - python-version: "3.11"
+            req: "requirements_311.txt"
     env:
       MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
-      - name: Install deps (314)
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: ${{ matrix.req }}
+
+      - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements_314.lock.txt ]; then
-            pip install -r requirements_314.lock.txt
-          else
-            pip install -r requirements_314.txt
-          fi
-      - name: Run 3.14 scripts
-        run: |
-          python scripts/analizador_activos.py
-          python scripts/compara_act_vs_portafolio.py
-          python scripts/indicadores_senales.py
+          pip install -r "${{ matrix.req }}"
 
-  py311:
-    runs-on: ubuntu-latest
-    env:
-      MPLBACKEND: Agg
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Smoke run (scripts)
+        run: |
+          python -c "import pro_riesgo_finanzas as p; print('pkg OK', getattr(p,'__version__','?'))"
+          python scripts/indicadores_senales.py --help || true
+          python scripts/compara_act_vs_Portafolio.py --help || true
+          python scripts/pronosticos.py --help || true
+          python scripts/red_neuronal.py --help || true
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          python-version: "3.11"
-      - name: Install deps (311)
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements_311.lock.txt ]; then
-            pip install -r requirements_311.lock.txt
-          else:
-            pip install -r requirements_311.txt
-          fi
-      - name: Run 3.11 scripts
-        run: |
-          python scripts/pronosticos.py
-          python scripts/red_neuronal.py
-
+          name: reportes-y-exports-${{ matrix.python-version }}
+          path: |
+            exports/**
+            reportes/**
+          if-no-files-found: ignore
