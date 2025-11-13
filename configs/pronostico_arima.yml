@@ -1,0 +1,17 @@
+symbols: ["GC=F"]
+period: "1y"
+
+strategy:
+  name: "bot_runner.strategies.pronostico_arima:ArimaForecastStrategy"
+  params:
+    steps: 12
+    buy_threshold: 0.60
+    sell_threshold: 0.60
+
+execution:
+  plot: true
+  export_dir: "outputs"
+
+risk:
+  cash: 10000
+

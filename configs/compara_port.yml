@@ -1,0 +1,19 @@
+symbols: ["TSLA"]     # activo a comparar
+period: "1y"
+
+strategy:
+  name: "bot_runner.strategies.compara_port:ComparePortfolioStrategy"
+  params:
+    portfolio:
+      tickers: ["AAPL","MSFT","NVDA"]
+      weights: [0.4, 0.3, 0.3]
+    buy_threshold: 0.60
+    sell_threshold: 0.60
+
+execution:
+  plot: true
+  export_dir: "outputs"
+
+risk:
+  cash: 10000
+

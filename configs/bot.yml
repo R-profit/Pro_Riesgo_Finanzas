@@ -1,0 +1,47 @@
+# Bot QubitCapital — Configuración principal
+# Reglas:
+# - Usa period O start+end (no ambos).
+# - La estrategia apunta a la clase compuesta (qubit_capital).
+# - export_dir es local (no versionar).
+# - weights deben sumar 1.0.
+
+symbols: ["GC=F"]
+period: "1y"
+# start: "2024-01-01"
+# end:   "2025-01-01"
+
+strategy:
+  name: "bot_runner.strategies.qubit_capital:QubitCapitalComposite"
+  params:
+    # --- Pronóstico (ARIMA/ETS) ---
+    steps_forecast: 12
+    use_forecast_gate: true
+
+    # --- Señales técnicas (EMA/MACD/RSI/Bollinger) ---
+    ema_short: 12
+    ema_long: 26
+    rsi_window: 14
+    rsi_overbought: 70
+    rsi_oversold: 30
+    bb_window: 20
+    bb_dev: 2.0
+    width_thresh: 0.10
+
+    # --- Comparador (filtro opcional por portafolio) ---
+    use_portfolio_gate: true
+    portfolio_tickers: ["AAPL","MSFT","NVDA"]
+    portfolio_weights: [0.4, 0.3, 0.3]
+
+    # --- Policy / Umbrales + costos de ejecución ---
+    buy_threshold: 0.65
+    sell_threshold: 0.60
+    slippage_bps: 1.0
+    fee_bps: 2.0
+
+execution:
+  plot: true
+  export_dir: "outputs"   # añadir a .gitignore
+
+risk:
+  cash: 10000
+

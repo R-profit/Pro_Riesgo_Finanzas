@@ -1,0 +1,36 @@
+# QubitCapital: integra pronóstico ARIMA + señales técnicas + comparador
+symbols: ["GC=F"]          # símbolo principal
+period: "1y"               # usa period O start/end (no ambos)
+
+strategy:
+  name: "bot_runner.strategies.qubit_capital:QubitCapitalComposite"
+  params:
+    # --- Pronóstico ---
+    steps_forecast: 12
+    # --- Señales técnicas ---
+    ema_short: 12
+    ema_long: 26
+    rsi_window: 14
+    rsi_overbought: 70
+    rsi_oversold: 30
+    bb_window: 20
+    bb_dev: 2.0
+    width_thresh: 0.10
+    # --- Comparador (gate opcional) ---
+    use_portfolio_gate: true
+    portfolio_tickers: ["AAPL","MSFT","NVDA"]
+    portfolio_weights: [0.4, 0.3, 0.3]
+    # --- Policy/umbrales y costos ---
+    buy_threshold: 0.65
+    sell_threshold: 0.60
+    slippage_bps: 1.0
+    fee_bps: 2.0
+    use_forecast_gate: true
+
+execution:
+  plot: true
+  export_dir: "outputs"     # artefactos locales, no versionar
+
+risk:
+  cash: 10000
+
